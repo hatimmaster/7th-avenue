@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Admin Portal - 7th Avenue VIP Salon</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: { 400: '#F6D365', 500: '#D4AF37', 600: '#AA820A' },
+            dark: { 900: '#0B0F17', 800: '#131924', 700: '#1C2536' }
+          },
+          fontFamily: {
+            serif: ['Cinzel', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-dark-900 text-gray-200 font-sans antialiased min-h-screen">
+
+  <header class="bg-dark-800 border-b border-gold-500/20 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-full bg-gold-500 flex items-center justify-center font-serif text-black font-bold text-xl">7</div>
+        <div>
+          <span class="font-serif text-xl font-bold text-white block">7TH AVENUE STAFF PORTAL</span>
+          <span class="text-[10px] tracking-widest text-gold-400 uppercase font-semibold block">Hadapsar Operations Hub</span>
+        </div>
+      </div>
+      <a href="index.html" class="px-4 py-2 rounded-lg bg-dark-700 border border-gold-500/40 text-gold-400 text-xs font-bold hover:bg-gold-500 hover:text-black transition-all flex items-center gap-2">
+        <i data-lucide="external-link" class="w-4 h-4"></i> View Main Website
+      </a>
+    </div>
+  </header>
+
+  <main class="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="rounded-2xl bg-gradient-to-r from-gold-600 via-gold-500 to-gold-600 p-6 text-black mb-8 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <h2 class="text-2xl font-serif font-extrabold">Salon Staff & Admin Operations Hub</h2>
+        <p class="text-xs text-black/80 font-medium">Manually assign stylists, edit appointment status, and manage client walk-ins</p>
+      </div>
+      <button onclick="openWalkInModal()" class="px-5 py-2.5 rounded-xl bg-black text-gold-400 font-bold text-sm hover:bg-gray-900 transition-all flex items-center gap-2 shadow-lg">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i> Add Walk-In Booking
+      </button>
+    </div>
+
+    <!-- Live Booking Table -->
+    <div class="rounded-2xl bg-dark-800 border border-gold-500/30 overflow-hidden shadow-2xl">
+      <div class="p-6 border-b border-gold-500/20 flex justify-between items-center">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="clipboard-list" class="w-5 h-5 text-gold-400"></i> Live Appointments Database
+        </h3>
+        <span class="text-xs text-gold-400 font-mono" id="bookingCount">Total Bookings: 0</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-gray-300">
+          <thead class="bg-dark-900 text-gold-400 text-xs uppercase tracking-wider">
+            <tr>
+              <th class="py-4 px-6">ID & Date</th>
+              <th class="py-4 px-6">Client Info</th>
+              <th class="py-4 px-6">Service</th>
+              <th class="py-4 px-6">Assigned Stylist</th>
+              <th class="py-4 px-6">Status</th>
+              <th class="py-4 px-6 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminBookingTableBody" class="divide-y divide-gold-500/10">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Walk-In Modal -->
+  <div id="walkInModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-dark-800 border border-gold-500/40 rounded-2xl max-w-md w-full p-6 text-left shadow-2xl">
+      <div class="flex justify-between items-center mb-4 pb-2 border-b border-gold-500/20">
+        <h3 class="text-lg font-bold text-white">Add Walk-In Booking</h3>
+        <button onclick="closeWalkInModal()" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form onsubmit="handleWalkInSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-gold-400 mb-1">Client Name</label>
+          <input type="text" id="walkInName" required class="w-full bg-dark-900 border border-gold-500/30 rounded-lg px-3 py-2 text-white text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gold-400 mb-1">Phone Number</label>
+          <input type="tel" id="walkInPhone" required class="w-full bg-dark-900 border border-gold-500/30 rounded-lg px-3 py-2 text-white text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gold-400 mb-1">Service</label>
+          <select id="walkInService" required class="w-full bg-dark-900 border border-gold-500/30 rounded-lg px-3 py-2 text-white text-sm">
+            <option value="Hair Cut">Hair Cut & Styling</option>
+            <option value="Hair Colouring">L'Oréal Hair Colouring</option>
+            <option value="Hair Straightening">Brazilian Straightening</option>
+            <option value="Nail Extensions">Acrylic Nail Extensions</option>
+            <option value="Premium Manicure">Premium Manicure</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-gold-400 mb-1">Time Slot</label>
+            <input type="text" id="walkInTime" value="Walk-In Now" class="w-full bg-dark-900 border border-gold-500/30 rounded-lg px-3 py-2 text-white text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gold-400 mb-1">Stylist</label>
+            <select id="walkInStylist" class="w-full bg-dark-900 border border-gold-500/30 rounded-lg px-3 py-2 text-white text-sm">
+              <option value="Kaif">Kaif</option>
+              <option value="Sameer">Sameer</option>
+              <option value="Saif">Saif</option>
+              <option value="Rushabh">Rushabh</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="w-full py-3 rounded-xl bg-gold-500 text-black font-bold text-sm hover:bg-gold-400 transition-all mt-4">Save Booking</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const defaultBookings = [
+      { id: 'BK-101', name: 'Manoj Sharma', phone: '9822012345', email: 'manoj@example.com', service: 'Hair Cut', date: '2026-11-03', time: '11:00 AM', stylist: 'Kaif', status: 'Confirmed' },
+      { id: 'BK-102', name: 'Priya Patel', phone: '9890123456', email: 'priya@example.com', service: 'Professional Hair Colouring', date: '2026-11-03', time: '02:00 PM', stylist: 'Rushabh', status: 'Pending' },
+      { id: 'BK-103', name: 'Amit Verma', phone: '9765432109', email: 'amit@example.com', service: 'Brazilian Straightening', date: '2026-11-04', time: '04:00 PM', stylist: 'Sameer', status: 'Confirmed' }
+    ];
+
+    if (!localStorage.getItem('salon_bookings')) {
+      localStorage.setItem('salon_bookings', JSON.stringify(defaultBookings));
+    }
+
+    function getBookings() {
+      return JSON.parse(localStorage.getItem('salon_bookings')) || [];
+    }
+
+    function saveBookings(data) {
+      localStorage.setItem('salon_bookings', JSON.stringify(data));
+      renderAdminTable();
+    }
+
+    function renderAdminTable() {
+      const bookings = getBookings();
+      const tbody = document.getElementById('adminBookingTableBody');
+      document.getElementById('bookingCount').innerText = `Total Bookings: ${bookings.length}`;
+      tbody.innerHTML = '';
+
+      bookings.forEach(b => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-dark-700/50 transition-colors";
+        tr.innerHTML = `
+          <td class="py-4 px-6 font-mono text-gold-400 font-bold">
+            ${b.id}
+            <div class="text-xs text-gray-400">${b.date} (${b.time})</div>
+          </td>
+          <td class="py-4 px-6">
+            <strong class="text-white block">${b.name}</strong>
+            <div class="text-xs text-gray-400">${b.phone}</div>
+          </td>
+          <td class="py-4 px-6 text-gray-200">${b.service}</td>
+          <td class="py-4 px-6">
+            <select onchange="updateStylist('${b.id}', this.value)" class="bg-dark-900 border border-gold-500/30 rounded px-2 py-1 text-xs text-gold-300 focus:outline-none">
+              <option value="Unassigned" ${b.stylist === 'Unassigned' ? 'selected' : ''}>Unassigned</option>
+              <option value="Kaif" ${b.stylist === 'Kaif' ? 'selected' : ''}>Kaif</option>
+              <option value="Sameer" ${b.stylist === 'Sameer' ? 'selected' : ''}>Sameer</option>
+              <option value="Saif" ${b.stylist === 'Saif' ? 'selected' : ''}>Saif</option>
+              <option value="Rushabh" ${b.stylist === 'Rushabh' ? 'selected' : ''}>Rushabh</option>
+            </select>
+          </td>
+          <td class="py-4 px-6">
+            <select onchange="updateStatus('${b.id}', this.value)" class="bg-dark-900 border border-gold-500/30 rounded px-2 py-1 text-xs font-bold text-white focus:outline-none">
+              <option value="Pending" ${b.status === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option value="Confirmed" ${b.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+              <option value="Completed" ${b.status === 'Completed' ? 'selected' : ''}>Completed</option>
+              <option value="Cancelled" ${b.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+          </td>
+          <td class="py-4 px-6 text-right">
+            <button onclick="deleteBooking('${b.id}')" class="px-2 py-1 text-xs rounded bg-red-950 border border-red-500/40 text-red-400 hover:bg-red-900">
+              Delete
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateStylist(id, newStylist) {
+      const bookings = getBookings();
+      const target = bookings.find(b => b.id === id);
+      if (target) { target.stylist = newStylist; saveBookings(bookings); }
+    }
+
+    function updateStatus(id, newStatus) {
+      const bookings = getBookings();
+      const target = bookings.find(b => b.id === id);
+      if (target) { target.status = newStatus; saveBookings(bookings); }
+    }
+
+    function deleteBooking(id) {
+      let bookings = getBookings();
+      bookings = bookings.filter(b => b.id !== id);
+      saveBookings(bookings);
+    }
+
+    function openWalkInModal() { document.getElementById('walkInModal').classList.remove('hidden'); }
+    function closeWalkInModal() { document.getElementById('walkInModal').classList.add('hidden'); }
+
+    function handleWalkInSubmit(e) {
+      e.preventDefault();
+      const newBooking = {
+        id: 'BK-' + Math.floor(100 + Math.random() * 900),
+        name: document.getElementById('walkInName').value,
+        phone: document.getElementById('walkInPhone').value,
+        email: 'walkin@salon.com',
+        service: document.getElementById('walkInService').value,
+        date: new Date().toISOString().split('T')[0],
+        time: document.getElementById('walkInTime').value,
+        stylist: document.getElementById('walkInStylist').value,
+        status: 'Confirmed'
+      };
+      const bookings = getBookings();
+      bookings.push(newBooking);
+      saveBookings(bookings);
+      closeWalkInModal();
+    }
+
+    renderAdminTable();
+  </script>
+</body>
+</html>
